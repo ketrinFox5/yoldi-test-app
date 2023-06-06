@@ -2,44 +2,50 @@ import { useState } from 'react';
 import iconEye from '../../img/eye-solid.svg';
 import iconEyeSlash from '../../img/eye-slash.svg';
 import { ILogIn } from '../../interfaces/ILogIn';
-import { loginUser } from '../../services/authService';
-import { getProfileUser } from '../../services/profleService';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+// import { loginUser } from '../../services/authService';
+// import { getProfileUser } from '../../services/profleService';
+// import { useNavigate } from 'react-router-dom';
 
-const LogIn = (props: {setProfileData: any, setPath: any}) => {
+const LogIn = (props: {setProfileData: any, setPath: any, login: any, error: string}) => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [inputType, setInputType] = useState('password');
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const isValid: boolean = email === '' || password === '';
 
-    const login = (userData: ILogIn) => {
+//     const login = (userData: ILogIn) => {
         
-        loginUser(userData).then(data => {
-          if ('message' in data) {
-           setError(data.message);
-          } else if ('value' in data) {
-            localStorage.setItem('user-value', data.value);
-            getProfileUser(data.value).then(data => {
-                   if ('message' in data) {
-                       setError(data.message);
-                   } else {
-                        props.setProfileData(data);
-                        props.setPath('/account');
-                        navigate('/account');
-                   }
-              })
-          }
-       });
-   }
+//         loginUser(userData).then(data => {
+//           if ('message' in data) {
+//            setError(data.message);
+//           } else if ('value' in data) {
+//             localStorage.setItem('user-value', data.value);
+//             getProfileUser(data.value).then(data => {
+//                    if ('message' in data) {
+//                        setError(data.message);
+//                    } else {
+//                         props.setProfileData(data);
+//                         props.setPath('/account');
+//                         navigate('/account');
+//                    }
+//               })
+//           }
+//        });
+//    }
+
+useEffect(() => {
+    setError(props.error);
+}, [props.error]);
 
     const handleSubmit = (event: any) => {
         event.preventDefault();
         const userData: ILogIn = {email: email, password: password};
-        login(userData);
+        props.login(userData);
+        // setError(props.error);
     }
 
     const handleInputType = () => {

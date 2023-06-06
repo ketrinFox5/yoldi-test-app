@@ -34,8 +34,9 @@ const Header = (props: IHeader) => {
             // reloadUserInfo();
             setUserInfo(props.userData);
         }
-        if (props.userData === null && props.url !== "/account") {
-            reloadUserInfo();
+        // localStorage.getItem('user-value') === '';
+        if (props.url === '/login' ) {
+            setUserInfo(null);
         }
     }, [props.userData])
 

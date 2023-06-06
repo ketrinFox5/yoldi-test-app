@@ -11,7 +11,7 @@ import { getProfileUser, updateProfileUser } from '../../services/profleService'
 import EditUserInfoModal from '../EditUserInfoModal';
 import { getUserBySlug } from '../../services/userService';
 
-const UserInfo = (props: {profileData: IProfile | null, setProfileData: any, isOwner: boolean}) => {
+const UserInfo = (props: {profileData: IProfile | null, isOwner: boolean, signOut: any}) => {
     const [userInfo, setUserInfo] = useState<IProfile | null>(props.profileData);
     const [isHovered, setIsHovered] = useState(false);
     const [selectedFile, setSelectedFile] = useState();
@@ -50,12 +50,6 @@ const UserInfo = (props: {profileData: IProfile | null, setProfileData: any, isO
             setUpdateImg(props.profileData?.image);
         }
     }, [props.profileData?.image])
-
-    // useEffect(() => {
-    //     if (!userInfo) {
-    //         setUserInfo(props.profileData);
-    //     }
-    // }, [props.profileData])
 
     // useEffect(() => {
     //     if (props.isOwner) {
@@ -128,9 +122,10 @@ const UserInfo = (props: {profileData: IProfile | null, setProfileData: any, isO
     // }
 
     const signOut = () => {
-        props.setProfileData(null);
-        localStorage.setItem('user-value', '');
-        navigate('/login');
+        // props.setProfileData(null);
+        // localStorage.setItem('user-value', '');
+        // navigate('/login');
+        props.signOut();
     }
 
     return(

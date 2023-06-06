@@ -7,52 +7,52 @@ import { useParams } from 'react-router-dom'
 import { getUserBySlug } from '../../services/userService';
 import { useState } from 'react';
 
-const Account = (props: {profileData: IProfile | null, setProfileData?: any}) => {
+const Account = (props: {profileData: IProfile | null, isOwner: boolean, signOut: any}) => {
     const [isOwner, setIsOwner] = useState(false);
-    const [userInfo, setUserInfo] = useState(props.profileData);
 
-    const reloadUserInfo = () => {
-        const value = localStorage.getItem('user-value');
-        if (value !== null) {
-            getProfileUser(value).then(data => {
-                if ('message' in data) {
-                    // setError(data.message);
-                } else {
-                    setUserInfo(data);
-                    props.setProfileData(data);
-                }
-            })
-        }
-    }
+    // const reloadUserInfo = () => {
+    //     const value = localStorage.getItem('user-value');
+    //     if (value !== null) {
+    //         getProfileUser(value).then(data => {
+    //             if ('message' in data) {
+    //                 // setError(data.message);
+    //             } else {
+    //                 // props.setProfileData(data);
+    //             }
+    //         })
+    //     }
+    // }
 
-    const getGuestInfo = (slug: string) => {
-        getUserBySlug(slug).then(data => {
-            if ('message' in data) {
+    // const getGuestInfo = (slug: string) => {
+    //     getUserBySlug(slug).then(data => {
+    //         if ('message' in data) {
 
-            } else {
-               setUserInfo(data);
-            }
-        })
+    //         } else {
+    //            setUserInfo(data);
+    //         }
+    //     })
         
-    }
+    // }
 
     const { slug } = useParams();
 
     useEffect(() => {
         // reloadUserInfo();
         if (slug && slug !== props.profileData?.slug) {
-            getGuestInfo(slug);
+            // getGuestInfo(slug);
             setIsOwner(false);
         } else {
-            reloadUserInfo();
+            // reloadUserInfo();
             setIsOwner(true);
         }
     }, []);
+
+    
     
     return(
         <section className="account">
-            {userInfo && <Cover cover={userInfo.cover} userName={userInfo.name} isOwner={isOwner}/>}
-            {userInfo && <UserInfo profileData={userInfo} setProfileData={props.setProfileData} isOwner={isOwner}/>}
+            {props.profileData && <Cover cover={props.profileData.cover} userName={props.profileData.name} isOwner={isOwner}/>}
+            {props.profileData && <UserInfo profileData={props.profileData}  isOwner={isOwner} signOut={props.signOut}/>}
         </section>
     );
 }

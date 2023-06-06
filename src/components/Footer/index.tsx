@@ -1,7 +1,4 @@
-import { IProfile } from '../../interfaces/IProfile';
-import { IUrl } from '../../interfaces/IUrl';
-
-const Footer = (props:{ path: string, profileData: IProfile | null}) => {
+const Footer = (props:{ path: string}) => {
     const isLogIn: boolean = props.path === '/login';
     const isSignUp: boolean = props.path === '/signup';
     const link: string = isLogIn ? '/signup' : '/login';
