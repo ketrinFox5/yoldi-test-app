@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { useState } from 'react';
 import UserCard from '../../components/UserCard';
+import { IProfile } from '../../interfaces/IProfile';
 import { getUser } from '../../services/userService';
 
 const Users = () => {
 
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<IProfile[]>([]);
     const [error, setError] = useState();
 
     const loadUsers = () => {
@@ -13,14 +14,29 @@ const Users = () => {
             if ('message' in data) {
                 setError(data.message);
             } else {
-                const users = data.slice(0,10);
+                const users = data.filter((user: IProfile) => user.image);
                 setUsers(users);
+                // setUsers(prevData => [...prevData, ...data]);
             }
         });
     }
 
     useEffect(() => {
         loadUsers();
+
+        //динамимчная загрузка данных при скролле
+
+        // const handleScroll = () => {
+        //     if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
+        //         loadUsers();
+        //     }
+        // };
+    
+        // window.addEventListener('scroll', handleScroll);
+
+        // return () => {
+        //     window.removeEventListener('scroll', handleScroll);
+        // };
     }, [])
 
     return(
@@ -29,7 +45,7 @@ const Users = () => {
                 Список аккаунтов
             </h1>
             <div className="users__list">
-                {users.slice(0,10).map((user) => (
+                {users.map((user) => (
                      <UserCard user={user}/>
                 ))}
                 

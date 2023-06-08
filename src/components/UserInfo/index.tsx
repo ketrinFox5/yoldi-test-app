@@ -5,67 +5,33 @@ import iconSignOut from '../../img/sign-out-alt-solid.svg';
 import iconCamera from '../../img/camera-solid.svg';
 import { useRef } from 'react';
 import { postImage } from '../../services/imageService';
-import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { getProfileUser, updateProfileUser } from '../../services/profleService';
+import { updateProfileUser } from '../../services/profleService';
 import EditUserInfoModal from '../EditUserInfoModal';
-import { getUserBySlug } from '../../services/userService';
 
-const UserInfo = (props: {profileData: IProfile | null, isOwner: boolean, signOut: any}) => {
+const UserInfo = (props: {profileData: IProfile | null, isOwner: boolean, signOut: any, isLoading: boolean}) => {
     const [userInfo, setUserInfo] = useState<IProfile | null>(props.profileData);
     const [isHovered, setIsHovered] = useState(false);
-    const [selectedFile, setSelectedFile] = useState();
     const [updateImg, setUpdateImg] = useState<IProfile['image']>(null);
     const [error, setError] = useState('');
     const [showModal, setShowModal] = useState(false);
 
-    const reloadUserInfo = () => {
-        const value = localStorage.getItem('user-value');
-        if (value !== null) {
-            getProfileUser(value).then(data => {
-                if ('message' in data) {
-                    setError(data.message);
-                } else {
-                    setUserInfo(data);
-                    setUpdateImg(data.image);
-                }
-            })
-        }
-    }
-
-    const reloadGuestInfo = (slug: string) => {
-        getUserBySlug(slug).then(data => {
-            if ('message' in data) {
-
-            } else {
-                setUserInfo(data);
-                setUpdateImg(data.image);
-            }
-        })
-        
-    }
-
-    useEffect(() => {
-        if (props.profileData?.image) {
-            setUpdateImg(props.profileData?.image);
-        }
-    }, [props.profileData?.image])
-
-    // useEffect(() => {
-    //     if (props.isOwner) {
-    //         // reloadUserInfo();
-    //     } else {
-    //         if (userInfo) {
-    //             reloadGuestInfo(userInfo.slug);
-    //         }
-    //     }
-    // }, []);
-
-    const navigate = useNavigate();
-
     const firstCharInName: string =props.profileData ? props.profileData.name.charAt(0): '';
     const inputFileImgRef = useRef<HTMLInputElement>(null);
 
+    useEffect(() => {
+        if (props.profileData) {
+            setUpdateImg(props.profileData?.image);
+            console.log('1')
+        }
+    }, [props.profileData?.image])
+
+    useEffect(()=> {
+        setUserInfo(props.profileData);
+        console.log('2')
+    }, [props.profileData])
+
+   
     const handleMouseEnter = () => {
         setIsHovered(true);
     };
@@ -75,7 +41,6 @@ const UserInfo = (props: {profileData: IProfile | null, isOwner: boolean, signOu
     };
 
     const handleFileChange = (event: any) => {
-        // setSelectedFile(event.target.files[0]);
         handleFileUpload(event.target.files[0]);
     };
 
@@ -116,17 +81,10 @@ const UserInfo = (props: {profileData: IProfile | null, isOwner: boolean, signOu
         document.body.style.overflow = 'auto';
     }
 
-    // const showErrorMessage = (message: string) => {
-    //     setError(message);
-    //     setShowError(true);
-    // }
-
     const signOut = () => {
-        // props.setProfileData(null);
-        // localStorage.setItem('user-value', '');
-        // navigate('/login');
         props.signOut();
     }
+    if (props.isLoading) return null;
 
     return(
         <div className="user-info">

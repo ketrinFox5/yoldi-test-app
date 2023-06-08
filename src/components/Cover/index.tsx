@@ -6,18 +6,21 @@ import { useState } from 'react';
 import { useRef } from 'react';
 import { postImage } from '../../services/imageService';
 import { updateProfileUser } from '../../services/profleService';
+import { useEffect } from 'react';
 
-const Cover = (props: {cover: IImage | null, userName: string | undefined, isOwner: boolean}) => {
-    // let isEmptyCover: boolean = props.cover === null;
+const Cover = (props: {cover: IImage | null, userName: string | undefined, isOwner: boolean, isLoading: boolean}) => {
+
     const inputFileRef = useRef<HTMLInputElement>(null);
 
     const [isHovered, setIsHovered] = useState(false);
-    // const [selectedFile, setSelectedFile] = useState();ы
     const [error, setError] = useState('');
     const [coverImg, setCoverImg] = useState(props.cover);
 
+    useEffect(() => {
+        setCoverImg(props.cover);
+    }, [props.cover])
+
     const handleFileChange = (event: any) => {
-        // setSelectedFile(event.target.files[0]);
         handleFileUpload(event.target.files[0]);
     };
 
@@ -58,7 +61,8 @@ const Cover = (props: {cover: IImage | null, userName: string | undefined, isOwn
             }
         });
     }
-
+    if (props.isLoading) return null;
+    
     return(
         <div className="cover" onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}>
@@ -81,15 +85,9 @@ const Cover = (props: {cover: IImage | null, userName: string | undefined, isOwn
                             <span className="suffix"><i><img src={iconImage} alt=""/></i></span>
                         </button> 
                     </>
-                    }
-            
-                    
-                    
-                    
+                    } 
                 </div>
-                
             }
-            
         </div>
     );
 }

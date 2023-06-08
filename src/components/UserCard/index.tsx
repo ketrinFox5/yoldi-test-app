@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { IProfile } from '../../interfaces/IProfile';
@@ -6,18 +7,13 @@ const UserCard = (props: {user: IProfile}) => {
     const [image, setImage] = useState(props.user.image?.url);
     const firstCharInName: string | undefined = props.user?.name.charAt(0);
     const isImage: boolean = image !== '';
-    // const goToUserInfo = () => {
-    //     getUserBySlug(props.user.slug).then(data => {
-    //         if ('message' in data) {
-    //             // setError(data.message);
-    //         } else {
-    //             // redirect('/account/:slug'); 
-    //             return(
-    //                 <Account profileData={data}/>
-    //             )
-    //         }
-    //     })
-    // }
+
+    useEffect(() => {
+        if (!image) {
+            setImage(props.user.image?.url)
+        }
+    }, [props.user.image?.url])
+
     return(
         <Link to={`/account/${props.user.slug}`}>
             {props.user &&

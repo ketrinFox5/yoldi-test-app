@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import logo from "../../img/logo-wrapper.svg";
 import { IHeader } from '../../interfaces/IHeader';
 import { IProfile } from '../../interfaces/IProfile';
-import { getProfileUser } from '../../services/profleService';
 
 const Header = (props: IHeader) => {
     const [userInfo, setUserInfo] = useState<IProfile | null>(props.userData);
@@ -15,26 +14,11 @@ const Header = (props: IHeader) => {
         navigate('/login');
     }
 
-
-    const reloadUserInfo = () => {
-        const value = localStorage.getItem('user-value');
-        if (value !== null) {
-            getProfileUser(value).then(data => {
-                if ('message' in data) {
-                    // setError(data.message);
-                } else {
-                    setUserInfo(data);
-                }
-            })
-        }
-    }
-
     useEffect(() => {
         if (!userInfo) {
-            // reloadUserInfo();
             setUserInfo(props.userData);
         }
-        // localStorage.getItem('user-value') === '';
+
         if (props.url === '/login' ) {
             setUserInfo(null);
         }

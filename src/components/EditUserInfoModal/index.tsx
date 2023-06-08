@@ -51,7 +51,6 @@ const EditUserInfoModal = (props: {userInfo: IProfile | null, onClose: any, onSa
                         </div>
                     <label htmlFor="user-description" className="btn__text gray ">
                         Описание
-                        {/* <input className="input" type="text" name="user-description" value={description} onChange={(e) => setDescription(e.target.value)}/> */}
                         <textarea name="user-description" className="input paragraph" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
                     </label>
                     {error && 

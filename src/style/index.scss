@@ -110,7 +110,6 @@ a {
                 border: none;
                 outline: none;
             }
-
     
             .suffix {
                 margin-left: 5px;
@@ -129,10 +128,6 @@ a {
 
     &-field:hover, &-field:focus {
         border: 1px solid $gray;
-
-        .suffix {
-            opacity: 1;
-        }
     }
 }
 
@@ -145,7 +140,6 @@ a {
     box-sizing: border-box;
     background-color: $background-secondary;
     border-bottom: 1px solid $strokes-secondary;
-    // z-index: -100;
     
     &__img {
         height: 200px;
@@ -220,10 +214,6 @@ a {
             color: $txt-color;
         }
     };
-
-    // &__list .user__card:last-child {
-    //     margin-bottom: 0;
-    // }
 }
 
 .modal {
@@ -318,9 +308,11 @@ a {
 }
 
 @media screen and (max-width: 576px) {
-
     
     .header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
 
         &__text {
             display: none;

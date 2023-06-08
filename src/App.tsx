@@ -11,10 +11,11 @@ import Account from './pages/Account';
 import { IProfile } from './interfaces/IProfile';
 import Users from './pages/Users';
 import { ILogIn } from './interfaces/ILogIn';
-import { loginUser } from './services/authService';
+import { loginUser, signUpUser } from './services/authService';
 import { useEffect } from 'react';
 import { getProfileUser } from './services/profleService';
 import { getUserBySlug } from './services/userService';
+import { ISignUp } from './interfaces/ISignUp';
 
 function App() {
   const [profileData, setProfileData] = useState<IProfile | null>(null);
@@ -23,11 +24,25 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('user-value'));
   const [isOwner, setIsOwner] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const match = useMatch("/account/:slug");
   
   const login = (userData: ILogIn) => {
      loginUser(userData).then(data => {
+      if ('message' in data) {
+        setError(data.message);
+      }
+      if ('value' in data) {
+        setToken(data.value);
+        localStorage.setItem('user-value', data.value);
+        navigate('/account');
+      }
+    })
+  }
+
+  const signUp = (userData: ISignUp) => {
+    signUpUser(userData).then(data => {
       if ('message' in data) {
         setError(data.message);
       }
@@ -46,19 +61,19 @@ function App() {
       } else {
            setProfileData(data);
            setPath('/account');
-          //  navigate('/account');
       }
     })
   }
 
   const getGuestInfo = (slug: string) => {
+    setIsLoading(true);
     getUserBySlug(slug).then(data => {
       if ('message' in data) {
         setError(data.message);
-        
       } else {
          setGuestInfo(data);
       }
+      setIsLoading(false);
     })
   }
 
@@ -67,6 +82,7 @@ function App() {
     localStorage.setItem('user-value', '');
     setProfileData(null);
     setPath('/login');
+    setError('');
     navigate('/login');
   }
 
@@ -90,12 +106,12 @@ function App() {
     <div>
       <Header url={path} userData={profileData}/>
         <Routes>
-          <Route path="/" element={<FormWrapper><Register setProfileData={setProfileData}/></FormWrapper>}></Route>
-          <Route path="/signup" element={<FormWrapper><Register setProfileData={setProfileData}/></FormWrapper>}></Route>
-          <Route path="/login" element={<FormWrapper><LogIn setProfileData={setProfileData} setPath={setPath} login={login} error={error}/></FormWrapper>}></Route>
-          <Route path="/account" element={<Account profileData={profileData} isOwner={isOwner} signOut={signOut}/>}></Route>
+          <Route path="/" element={<FormWrapper><Register signUp={signUp} error={error}/></FormWrapper>}></Route>
+          <Route path="/signup" element={<FormWrapper><Register signUp={signUp} error={error}/></FormWrapper>}></Route>
+          <Route path="/login" element={<FormWrapper><LogIn login={login} error={error}/></FormWrapper>}></Route>
+          <Route path="/account" element={<Account profileData={profileData} isOwner={isOwner} signOut={signOut} isLoading={isLoading}/>}></Route>
           <Route path="/users" element={<Users/>}></Route>
-          <Route path="/account/:slug" element={<Account profileData={guestInfo} isOwner={isOwner} signOut={signOut}/>}></Route>
+          <Route path="/account/:slug" element={<Account profileData={guestInfo} isOwner={isOwner} signOut={signOut} isLoading={isLoading}/>}></Route>
         </Routes>
       {!profileData && <Footer path={path}/>}
     </div>
