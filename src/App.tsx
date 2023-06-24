@@ -79,7 +79,7 @@ function App() {
 
   const signOut = () => {
     setToken(null);
-    localStorage.setItem('user-value', '');
+    localStorage.removeItem('user-value');
     setProfileData(null);
     setPath('/login');
     setError('');
@@ -91,7 +91,6 @@ function App() {
       getUserInfo(token);
       setIsOwner(true);
     }
-    
   }, [token]);
 
   useEffect(() => {
@@ -99,8 +98,7 @@ function App() {
         getGuestInfo(match?.params?.slug);
         setIsOwner(false);
     }
-    
-}, [match?.params?.slug]);
+  }, [match?.params?.slug]);
 
   return (
     <div>

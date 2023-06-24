@@ -19,18 +19,15 @@ const UserInfo = (props: {profileData: IProfile | null, isOwner: boolean, signOu
     const firstCharInName: string =props.profileData ? props.profileData.name.charAt(0): '';
     const inputFileImgRef = useRef<HTMLInputElement>(null);
 
+    useEffect(()=> {
+        setUserInfo(props.profileData);
+    }, [props.profileData]);
+
     useEffect(() => {
         if (props.profileData) {
             setUpdateImg(props.profileData?.image);
-            console.log('1')
         }
-    }, [props.profileData?.image])
-
-    useEffect(()=> {
-        setUserInfo(props.profileData);
-        console.log('2')
-    }, [props.profileData])
-
+    }, [props.profileData?.image]);
    
     const handleMouseEnter = () => {
         setIsHovered(true);
