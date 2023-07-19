@@ -1,6 +1,7 @@
 Тестовое задание компании Yoldi (https://yoldi.agency/development)
 
-Посмотреть приложение можно здесь: https://main--velvety-sprinkles-90cc64.netlify.app/
+Посмотреть приложение можно здесь: https://main--velvety-sprinkles-90cc64.netlify.app/signup
+Также на отдельной ветке есть вариант с Redux (branch redux), посмотреть можно здесь: https://peaceful-platypus-8abbf9.netlify.app/signup
 
 Доступные руты: 
   - /login - для входа в систему
