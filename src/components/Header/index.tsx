@@ -2,11 +2,13 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "../../img/logo-wrapper.svg";
-import { IHeader } from '../../interfaces/IHeader';
 import { IProfile } from '../../interfaces/IProfile';
+import { useAppSelector } from '../../store/store';
 
-const Header = (props: IHeader) => {
-    const [userInfo, setUserInfo] = useState<IProfile | null>(props.userData);
+const Header = () => {
+    const user = useAppSelector(state => state.user.data);
+    const path = useAppSelector(state => state.path.value);
+    const [userInfo, setUserInfo] = useState<IProfile | null>(user);
     const image = userInfo?.image ? userInfo?.image : null;
     const firstCharInName: string = userInfo?.name ?  userInfo?.name.charAt(0): '';
     const navigate = useNavigate();
@@ -16,13 +18,13 @@ const Header = (props: IHeader) => {
 
     useEffect(() => {
         if (!userInfo) {
-            setUserInfo(props.userData);
+            setUserInfo(user);
         }
 
-        if (props.url === '/login' ) {
+        if (path === '/login' ) {
             setUserInfo(null);
         }
-    }, [props.userData])
+    }, [user])
 
     return <header className="header paragraph">
             <div className="header__logo">
@@ -39,7 +41,7 @@ const Header = (props: IHeader) => {
             {userInfo &&
                 <div className="header__user">
                     <div className="header__user-name">
-                       {userInfo.name}
+                        {userInfo.name}
                     </div>
                     <div className="avatar avatar__mini subtitle">
                         {image && 

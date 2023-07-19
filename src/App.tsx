@@ -8,7 +8,6 @@ import {
 } from "react-router-dom";
 import { useState } from 'react';
 import Account from './pages/Account';
-import { IProfile } from './interfaces/IProfile';
 import Users from './pages/Users';
 import { ILogIn } from './interfaces/ILogIn';
 import { loginUser, signUpUser } from './services/authService';
@@ -16,26 +15,33 @@ import { useEffect } from 'react';
 import { getProfileUser } from './services/profleService';
 import { getUserBySlug } from './services/userService';
 import { ISignUp } from './interfaces/ISignUp';
+import { setSignOut, setUser } from './store/user/user.slice';
+import { setPathAccount, setPathAccountGuest, setPathLogin } from './store/path/path.slice';
+import { setError } from './store/error/error.slice';
+import { setGuest } from './store/guest/guest.slice';
+import { setIsOwner } from './store/owner/isOwner.slice';
+import { setIsLoading } from './store/loading/isLoading.slice';
+import { useAppDispatch, useAppSelector } from './store/store';
 
 function App() {
-  const [profileData, setProfileData] = useState<IProfile | null>(null);
-  const [guestInfo, setGuestInfo] = useState<IProfile | null>(null);
-  const [path, setPath] = useState(window.location.pathname.toString());
+  // const [userInfo, setUserInfo] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('user-value'));
-  const [isOwner, setIsOwner] = useState(false);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
   const match = useMatch("/account/:slug");
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(state => state.user.data);
+  const signOutState = useAppSelector(state => state.user.isSignOut);
   
   const login = (userData: ILogIn) => {
-     loginUser(userData).then(data => {
+    loginUser(userData).then(data => {
       if ('message' in data) {
-        setError(data.message);
+        dispatch(setError(data.message));
       }
       if ('value' in data) {
         setToken(data.value);
         localStorage.setItem('user-value', data.value);
+        dispatch(setSignOut(false));
         navigate('/account');
       }
     })
@@ -44,11 +50,12 @@ function App() {
   const signUp = (userData: ISignUp) => {
     signUpUser(userData).then(data => {
       if ('message' in data) {
-        setError(data.message);
+        dispatch(setError(data.message));
       }
       if ('value' in data) {
         setToken(data.value);
         localStorage.setItem('user-value', data.value);
+        dispatch(setSignOut(false));
         navigate('/account');
       }
     })
@@ -57,63 +64,72 @@ function App() {
   const getUserInfo = (token: string) => {
     getProfileUser(token).then(data => {
       if ('message' in data) {
-          setError(data.message);
+          dispatch(setError(data.message));
       } else {
-           setProfileData(data);
-           setPath('/account');
+          dispatch(setError(null));
+          dispatch(setUser(data));
+          dispatch(setPathAccount());
       }
     })
   }
 
   const getGuestInfo = (slug: string) => {
-    setIsLoading(true);
+    dispatch(setIsLoading(true));
     getUserBySlug(slug).then(data => {
       if ('message' in data) {
-        setError(data.message);
+        dispatch(setError(data.message));
       } else {
-         setGuestInfo(data);
+        dispatch(setError(null));
+        dispatch(setGuest(data));
+        dispatch(setPathAccountGuest(data.slug));
       }
-      setIsLoading(false);
+      dispatch(setIsLoading(false));
     })
   }
 
   const signOut = () => {
     setToken(null);
     localStorage.removeItem('user-value');
-    setProfileData(null);
-    setPath('/login');
-    setError('');
+    dispatch(setUser(null));
+    dispatch(setPathLogin());
+    dispatch(setError(null));
     navigate('/login');
   }
 
   useEffect(() => {
     if(token) {
-      getUserInfo(token);
-      setIsOwner(true);
+        getUserInfo(token);
+      dispatch(setIsOwner(true));
     }
   }, [token]);
 
   useEffect(() => {
-    if (match?.params?.slug && match?.params?.slug !== profileData?.slug) {
+    if (signOutState) {
+      signOut();
+    }
+  }, [signOutState]);
+
+  useEffect(() => {
+    if (match?.params?.slug && match?.params?.slug !== user?.slug) {
         getGuestInfo(match?.params?.slug);
-        setIsOwner(false);
+        dispatch(setIsOwner(false));
     }
   }, [match?.params?.slug]);
 
   return (
     <div>
-      <Header url={path} userData={profileData}/>
+      <Header/>
         <Routes>
-          <Route path="/" element={<FormWrapper><Register signUp={signUp} error={error}/></FormWrapper>}></Route>
-          <Route path="/signup" element={<FormWrapper><Register signUp={signUp} error={error}/></FormWrapper>}></Route>
-          <Route path="/login" element={<FormWrapper><LogIn login={login} error={error}/></FormWrapper>}></Route>
-          <Route path="/account" element={<Account profileData={profileData} isOwner={isOwner} signOut={signOut} isLoading={isLoading}/>}></Route>
+          <Route path="/" element={<FormWrapper><Register signUp={signUp}/></FormWrapper>}></Route>
+          <Route path="/signup" element={<FormWrapper><Register signUp={signUp}/></FormWrapper>}></Route>
+          <Route path="/login" element={<FormWrapper><LogIn login={login}/></FormWrapper>}></Route>
+          <Route path="/account" element={<Account/>}></Route>
           <Route path="/users" element={<Users/>}></Route>
-          <Route path="/account/:slug" element={<Account profileData={guestInfo} isOwner={isOwner} signOut={signOut} isLoading={isLoading}/>}></Route>
+          <Route path="/account/:slug" element={<Account/>}></Route>
         </Routes>
-      {!profileData && <Footer path={path}/>}
+      {!user && <Footer/>}
     </div>
   );
 }
 
-export default App;
+export default App;           

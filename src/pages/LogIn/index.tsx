@@ -3,19 +3,20 @@ import iconEye from '../../img/eye-solid.svg';
 import iconEyeSlash from '../../img/eye-slash.svg';
 import { ILogIn } from '../../interfaces/ILogIn';
 import { useEffect } from 'react';
+import { useAppSelector } from '../../store/store';
 
-const LogIn = (props: { login: any, error: string}) => {
-
+const LogIn = (props: { login: any}) => {
+    const errorState = useAppSelector(state => state.error.message);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState(errorState);
     const [inputType, setInputType] = useState('password');
 
     const isValid: boolean = email === '' || password === '';
 
     useEffect(() => {
-        setError(props.error);
-    }, [props.error]);
+        setError(errorState);
+    }, [errorState]);
 
     const handleSubmit = (event: any) => {
         event.preventDefault();

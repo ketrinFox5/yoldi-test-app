@@ -1,13 +1,21 @@
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { IProfile } from '../../interfaces/IProfile';
 import { IUpdateProfile } from '../../interfaces/IUpdateProfile';
 import { updateProfileUser } from '../../services/profleService';
+import { setError } from '../../store/error/error.slice';
+import { useAppDispatch, useAppSelector } from '../../store/store';
+import { editUser, openEditModal } from '../../store/user/user.slice';
 
-const EditUserInfoModal = (props: {userInfo: IProfile | null, onClose: any, onSave: any}) => {
+const EditUserInfoModal = (props: {userInfo: IProfile | null}) => {
     const [name, setName] = useState(props.userInfo!.name);
     const [slug, setSlug] = useState(props.userInfo?.slug);
     const [description, setDescription] = useState(props.userInfo?.description === null ? '' : props.userInfo?.description);
-    const [error, setError] = useState(null);
+    // const [error, setError] = useState(null);
+
+    const error = useAppSelector(state => state.error.message);
+    const dispatch = useAppDispatch();
+
 
     const handleSubmit = (event: any) => {
         event.preventDefault();
@@ -22,13 +30,19 @@ const EditUserInfoModal = (props: {userInfo: IProfile | null, onClose: any, onSa
         if (value !== null) {
             updateProfileUser(updateProfileData, value).then(data => {
                 if ('message' in data) {
-                    setError(data.message);
+                    dispatch(setError(data.message));
+                    // setError(data.message);
                 } else {
-                    props.onSave(data);
-                    props.onClose();
+                    dispatch(editUser(data));
+                    dispatch(openEditModal(false));
                 }
             });
         }        
+    }
+
+    const onCloseModal = () => {
+        dispatch(openEditModal(false));
+        document.body.style.overflow = 'auto';
     }
 
     return(
@@ -59,10 +73,10 @@ const EditUserInfoModal = (props: {userInfo: IProfile | null, onClose: any, onSa
                         </div>
                     }
                     <div className="modal__btns">
-                        <button onClick={props.onClose} className="btn btn__text btn__secondary modal__btn">
+                        <button onClick={onCloseModal} className="btn btn__text btn__secondary modal__btn">
                             Отмена
                         </button>
-                        <button type="submit" className="btn btn__text btn__primary modal__btn">
+                        <button type="submit" className="btn btn__text btn__primary modal__btn" >
                             Сохранить
                         </button>
                     </div>

@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import iconEye from '../../img/eye-solid.svg';
 import { ISignUp } from '../../interfaces/ISignUp';
 import iconEyeSlash from '../../img/eye-slash.svg';
+import { useAppSelector } from '../../store/store';
 
-const Register = (props: {signUp: any, error: string}) => {
-
+const Register = (props: {signUp: any}) => {
+    const errorState = useAppSelector(state => state.error.message);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState(errorState);
     const [inputType, setInputType] = useState('password');
 
     const isValid: boolean = name === '' || email === '' || password === '';
@@ -24,8 +25,8 @@ const Register = (props: {signUp: any, error: string}) => {
     }
 
     useEffect(() => {
-        setError(props.error);
-    }, [props.error]);
+        setError(errorState);
+    }, [errorState]);
 
     return <div className="register">
         <h1 className="title">

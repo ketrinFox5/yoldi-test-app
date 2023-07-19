@@ -1,6 +1,9 @@
-const Footer = (props:{ path: string}) => {
-    const isLogIn: boolean = props.path === '/login';
-    const isSignUp: boolean = props.path === '/signup';
+import { useAppSelector } from '../../store/store';
+
+const Footer = () => {
+    const path = useAppSelector(state => state.path.value);
+    const isLogIn: boolean = path === '/login';
+    const isSignUp: boolean = path === '/signup';
     const link: string = isLogIn ? '/signup' : '/login';
 
     if (!isLogIn && !isSignUp) {

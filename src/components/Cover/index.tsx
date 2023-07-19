@@ -7,8 +7,12 @@ import { useRef } from 'react';
 import { postImage } from '../../services/imageService';
 import { updateProfileUser } from '../../services/profleService';
 import { useEffect } from 'react';
+import { useAppSelector } from '../../store/store';
 
-const Cover = (props: {cover: IImage | null, userName: string | undefined, isOwner: boolean, isLoading: boolean}) => {
+const Cover = (props: {cover: IImage | null, userName: string | undefined}) => {
+
+    const isOwner = useAppSelector(state => state.isOwner.value);
+    const isLoading = useAppSelector(state => state.isLoading.value);
 
     const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -61,7 +65,7 @@ const Cover = (props: {cover: IImage | null, userName: string | undefined, isOwn
             }
         });
     }
-    if (props.isLoading) return null;
+    if (isLoading) return null;
     
     return(
         <div className="cover" onMouseEnter={handleMouseEnter}
@@ -69,7 +73,7 @@ const Cover = (props: {cover: IImage | null, userName: string | undefined, isOwn
             {coverImg &&
                 <img src={coverImg?.url} alt="" className="cover__img"/>
             }
-            {isHovered && props.isOwner &&
+            {isHovered && isOwner &&
                 <div className="cover__update">
                     {coverImg !== null ? 
                         <button className="btn btn__text btn__secondary btn__master" onClick={() => {deleteCoverImg()}}>
